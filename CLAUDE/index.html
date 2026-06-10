@@ -272,6 +272,9 @@
             background-size: cover;
             filter: brightness(0.78) saturate(1.1);
             z-index: -2;
+            transform: translate(var(--par-x, 0px), var(--par-y, 0px)) scale(1.04);
+            transition: transform 0.3s ease-out;
+            will-change: transform;
         }
 
         /* Film grain overlay */
@@ -724,6 +727,16 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(30, 30, 32, 0.85);
+        }
+
         .dock-item:hover .tooltip {
             opacity: 1;
         }
@@ -856,6 +869,149 @@
 
         .menu-left span.menu-open {
             background: rgba(255, 255, 255, 0.18);
+        }
+
+        /* --- macOS NOTIFICATION BANNER --- */
+        .macos-notification {
+            position: fixed;
+            top: 35px;
+            right: 12px;
+            width: 350px;
+            background: rgba(40, 40, 44, 0.7);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            border: 0.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+            padding: 12px 14px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            z-index: 99990;
+            cursor: var(--cursor-pointer);
+            transform: translateX(400px);
+            transition: transform 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.05), opacity 0.4s ease;
+            font-family: var(--font-ui);
+        }
+
+        .macos-notification.show {
+            transform: translateX(0);
+        }
+
+        /* --- CONTROL CENTER --- */
+        #control-center {
+            position: fixed;
+            top: 32px;
+            right: 8px;
+            width: 330px;
+            background: rgba(30, 30, 34, 0.5);
+            backdrop-filter: blur(50px) saturate(180%);
+            -webkit-backdrop-filter: blur(50px) saturate(180%);
+            border: 0.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 10px;
+            z-index: 99996;
+            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.55);
+            display: none;
+            font-family: var(--font-ui);
+            animation: menuPop 0.15s ease-out;
+        }
+
+        .cc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .cc-card {
+            background: rgba(255, 255, 255, 0.09);
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            border-radius: 13px;
+            padding: 10px 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .cc-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 5px 0;
+            cursor: var(--cursor-pointer);
+        }
+
+        .cc-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #fff;
+            transition: background 0.2s ease;
+        }
+
+        .cc-circle.on {
+            background: #0a84ff;
+        }
+
+        .cc-circle svg {
+            width: 14px;
+            height: 14px;
+            display: block;
+        }
+
+        .cc-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .cc-sub {
+            font-size: 10.5px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .cc-center {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            cursor: var(--cursor-pointer);
+        }
+
+        .cc-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 22px;
+            border-radius: 11px;
+            background: rgba(255, 255, 255, 0.25);
+            outline: none;
+            margin-top: 8px;
+            cursor: var(--cursor-pointer);
+        }
+
+        .cc-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+            border: 0.5px solid rgba(0, 0, 0, 0.05);
+            cursor: var(--cursor-pointer);
+        }
+
+        .cc-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+            border: none;
+            cursor: var(--cursor-pointer);
         }
 
         /* Dock notification badge */
@@ -1768,7 +1924,7 @@
             <!-- Battery (with charge level, like the real menu bar) -->
             <svg class="menu-status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;"><rect x="1" y="7" width="19" height="10" rx="2.5"></rect><rect x="3" y="9" width="13" height="6" rx="1" fill="currentColor" stroke="none"></rect><path d="M22.5 10.5v3"></path></svg>
             <!-- Control Center -->
-            <svg class="menu-status-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4.5" width="24" height="8.5" rx="4.25"></rect><circle cx="21.5" cy="8.75" r="2.6" fill="currentColor" stroke="none"></circle><rect x="2" y="15" width="24" height="8.5" rx="4.25"></rect><circle cx="6.5" cy="19.25" r="2.6" fill="currentColor" stroke="none"></circle></svg>
+            <svg class="menu-status-icon" id="cc-trigger" style="cursor: var(--cursor-pointer);" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4.5" width="24" height="8.5" rx="4.25"></rect><circle cx="21.5" cy="8.75" r="2.6" fill="currentColor" stroke="none"></circle><rect x="2" y="15" width="24" height="8.5" rx="4.25"></rect><circle cx="6.5" cy="19.25" r="2.6" fill="currentColor" stroke="none"></circle></svg>
             <!-- Time/Date will be updated by JS -->
             <span id="clock">Fri Jan 5 10:41 AM</span>
         </div>
@@ -2255,15 +2411,14 @@
       <feDropShadow dx="0" dy="0.5" stdDeviation="0.5" flood-color="#000000" flood-opacity="0.2"/>
     </filter>
     <linearGradient id="bg-ps" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#001d33"/>
-      <stop offset="100%" stop-color="#000b14"/>
+      <stop offset="0%" stop-color="#00345c"/>
+      <stop offset="100%" stop-color="#001e36"/>
     </linearGradient>
   </defs>
   <rect x="3" y="3" width="58" height="58" rx="13" fill="url(#bg-ps)" filter="url(#sh-ps)"/>
-  <path d="M 3 16 C 3 8.8, 8.8 3, 16 3 L 48 3 C 55.2 3, 61 8.8, 61 16 L 61 24 C 61 24, 32 20, 3 24 Z" fill="#ffffff" opacity="0.04" />
-  <rect x="5.5" y="5.5" width="53" height="53" rx="11" fill="none" stroke="#00c8ff" stroke-width="1.5" opacity="0.85"/>
-  <text x="32" y="33" font-family="system-ui, -apple-system, sans-serif" font-size="23" font-weight="800" fill="#00c8ff" text-anchor="middle" dominant-baseline="central">Ps</text>
-  <rect x="3.5" y="3.5" width="57" height="57" rx="12.5" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <path d="M 3 16 C 3 8.8, 8.8 3, 16 3 L 48 3 C 55.2 3, 61 8.8, 61 16 L 61 24 C 61 24, 32 20, 3 24 Z" fill="#ffffff" opacity="0.05" />
+  <text x="32" y="32.5" font-family="system-ui, -apple-system, 'Helvetica Neue', sans-serif" font-size="27" font-weight="700" letter-spacing="-0.5" fill="#31a8ff" text-anchor="middle" dominant-baseline="central">Ps</text>
+  <rect x="3.5" y="3.5" width="57" height="57" rx="12.5" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
 </svg>`,
             premiere: `<svg viewBox="0 0 64 64" style="width:100%; height:100%; display:block;">
   <defs>
@@ -2272,15 +2427,14 @@
       <feDropShadow dx="0" dy="0.5" stdDeviation="0.5" flood-color="#000000" flood-opacity="0.2"/>
     </filter>
     <linearGradient id="bg-pr" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#160029"/>
-      <stop offset="100%" stop-color="#090012"/>
+      <stop offset="0%" stop-color="#11119a"/>
+      <stop offset="100%" stop-color="#00004a"/>
     </linearGradient>
   </defs>
   <rect x="3" y="3" width="58" height="58" rx="13" fill="url(#bg-pr)" filter="url(#sh-pr)"/>
-  <path d="M 3 16 C 3 8.8, 8.8 3, 16 3 L 48 3 C 55.2 3, 61 8.8, 61 16 L 61 24 C 61 24, 32 20, 3 24 Z" fill="#ffffff" opacity="0.04" />
-  <rect x="5.5" y="5.5" width="53" height="53" rx="11" fill="none" stroke="#ea76ff" stroke-width="1.5" opacity="0.85"/>
-  <text x="32" y="33" font-family="system-ui, -apple-system, sans-serif" font-size="23" font-weight="800" fill="#ea76ff" text-anchor="middle" dominant-baseline="central">Pr</text>
-  <rect x="3.5" y="3.5" width="57" height="57" rx="12.5" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <path d="M 3 16 C 3 8.8, 8.8 3, 16 3 L 48 3 C 55.2 3, 61 8.8, 61 16 L 61 24 C 61 24, 32 20, 3 24 Z" fill="#ffffff" opacity="0.05" />
+  <text x="32" y="32.5" font-family="system-ui, -apple-system, 'Helvetica Neue', sans-serif" font-size="27" font-weight="700" letter-spacing="-0.5" fill="#9999ff" text-anchor="middle" dominant-baseline="central">Pr</text>
+  <rect x="3.5" y="3.5" width="57" height="57" rx="12.5" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
 </svg>`,
             aftereffects: `<svg viewBox="0 0 64 64" style="width:100%; height:100%; display:block;">
   <defs>
@@ -2289,15 +2443,14 @@
       <feDropShadow dx="0" dy="0.5" stdDeviation="0.5" flood-color="#000000" flood-opacity="0.2"/>
     </filter>
     <linearGradient id="bg-ae" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#140030"/>
-      <stop offset="100%" stop-color="#080014"/>
+      <stop offset="0%" stop-color="#3a0d77"/>
+      <stop offset="100%" stop-color="#1f0540"/>
     </linearGradient>
   </defs>
   <rect x="3" y="3" width="58" height="58" rx="13" fill="url(#bg-ae)" filter="url(#sh-ae)"/>
-  <path d="M 3 16 C 3 8.8, 8.8 3, 16 3 L 48 3 C 55.2 3, 61 8.8, 61 16 L 61 24 C 61 24, 32 20, 3 24 Z" fill="#ffffff" opacity="0.04" />
-  <rect x="5.5" y="5.5" width="53" height="53" rx="11" fill="none" stroke="#d199ff" stroke-width="1.5" opacity="0.85"/>
-  <text x="32" y="33" font-family="system-ui, -apple-system, sans-serif" font-size="23" font-weight="800" fill="#d199ff" text-anchor="middle" dominant-baseline="central">Ae</text>
-  <rect x="3.5" y="3.5" width="57" height="57" rx="12.5" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <path d="M 3 16 C 3 8.8, 8.8 3, 16 3 L 48 3 C 55.2 3, 61 8.8, 61 16 L 61 24 C 61 24, 32 20, 3 24 Z" fill="#ffffff" opacity="0.05" />
+  <text x="32" y="32.5" font-family="system-ui, -apple-system, 'Helvetica Neue', sans-serif" font-size="27" font-weight="700" letter-spacing="-0.5" fill="#d291ff" text-anchor="middle" dominant-baseline="central">Ae</text>
+  <rect x="3.5" y="3.5" width="57" height="57" rx="12.5" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
 </svg>`,
             illustrator: `<svg viewBox="0 0 64 64" style="width:100%; height:100%; display:block;">
   <defs>
@@ -2306,15 +2459,14 @@
       <feDropShadow dx="0" dy="0.5" stdDeviation="0.5" flood-color="#000000" flood-opacity="0.2"/>
     </filter>
     <linearGradient id="bg-ai" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#241000"/>
-      <stop offset="100%" stop-color="#120500"/>
+      <stop offset="0%" stop-color="#471800"/>
+      <stop offset="100%" stop-color="#2b0c00"/>
     </linearGradient>
   </defs>
   <rect x="3" y="3" width="58" height="58" rx="13" fill="url(#bg-ai)" filter="url(#sh-ai)"/>
-  <path d="M 3 16 C 3 8.8, 8.8 3, 16 3 L 48 3 C 55.2 3, 61 8.8, 61 16 L 61 24 C 61 24, 32 20, 3 24 Z" fill="#ffffff" opacity="0.04" />
-  <rect x="5.5" y="5.5" width="53" height="53" rx="11" fill="none" stroke="#ff9f0a" stroke-width="1.5" opacity="0.85"/>
-  <text x="32" y="33" font-family="system-ui, -apple-system, sans-serif" font-size="23" font-weight="800" fill="#ff9f0a" text-anchor="middle" dominant-baseline="central">Ai</text>
-  <rect x="3.5" y="3.5" width="57" height="57" rx="12.5" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <path d="M 3 16 C 3 8.8, 8.8 3, 16 3 L 48 3 C 55.2 3, 61 8.8, 61 16 L 61 24 C 61 24, 32 20, 3 24 Z" fill="#ffffff" opacity="0.05" />
+  <text x="32" y="32.5" font-family="system-ui, -apple-system, 'Helvetica Neue', sans-serif" font-size="27" font-weight="700" letter-spacing="-0.5" fill="#ff9a00" text-anchor="middle" dominant-baseline="central">Ai</text>
+  <rect x="3.5" y="3.5" width="57" height="57" rx="12.5" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
 </svg>`,
             davinci: `<svg viewBox="0 0 64 64" style="width:100%; height:100%; display:block;">
   <defs>
@@ -2414,6 +2566,28 @@
     <circle cx="36" cy="32" r="3.8" fill="#1b82c4"/>
   </g>
   <rect x="3.5" y="3.5" width="57" height="57" rx="12.5" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+</svg>`,
+            trash: `<svg viewBox="0 0 64 64" style="width:100%; height:100%; display:block;">
+  <defs>
+    <filter id="sh-trash" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <linearGradient id="trash-metal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#9a9aa6" stop-opacity="0.32"/>
+    </linearGradient>
+  </defs>
+  <g filter="url(#sh-trash)">
+    <path d="M17 16 L21 53 Q21.4 57 25 57 L39 57 Q42.6 57 43 53 L47 16 Z" fill="url(#trash-metal)" opacity="0.45"/>
+    <path d="M22.2 17 L25.3 56" stroke="rgba(255,255,255,0.65)" stroke-width="1.5" fill="none"/>
+    <path d="M27.1 17 L29.1 56.5" stroke="rgba(255,255,255,0.65)" stroke-width="1.5" fill="none"/>
+    <path d="M32 17 L32 56.5" stroke="rgba(255,255,255,0.65)" stroke-width="1.5" fill="none"/>
+    <path d="M36.9 17 L34.9 56.5" stroke="rgba(255,255,255,0.65)" stroke-width="1.5" fill="none"/>
+    <path d="M41.8 17 L38.7 56" stroke="rgba(255,255,255,0.65)" stroke-width="1.5" fill="none"/>
+    <path d="M18.4 29 Q32 31 45.6 29" stroke="rgba(255,255,255,0.5)" stroke-width="1.3" fill="none"/>
+    <path d="M19.8 42 Q32 43.8 44.2 42" stroke="rgba(255,255,255,0.5)" stroke-width="1.3" fill="none"/>
+    <ellipse cx="32" cy="15" rx="16" ry="3.6" fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>
+  </g>
 </svg>`
         };
 
@@ -2497,6 +2671,8 @@
                         localStorage.setItem('portfolio_visited', '1');
                     }, 1800);
                 }
+                // macOS-style welcome notification banner
+                setTimeout(showWelcomeNotification, 5000);
             }, 1000);
         }
 
@@ -2880,6 +3056,26 @@
                 }
             });
 
+            // Trash at the far right of the dock, like the real macOS dock
+            const trashSep = document.createElement('div');
+            trashSep.style.cssText = 'width:0.5px; height:40px; background:rgba(255,255,255,0.2); margin:0 8px; align-self:center; flex-shrink:0; border-radius:1px;';
+            dk.appendChild(trashSep);
+
+            const trashEl = document.createElement('div');
+            trashEl.className = 'dock-item';
+            trashEl.id = 'dock-trash';
+            trashEl.innerHTML = `
+                <div class="tooltip"><span data-lang-en="Trash" data-lang-es="Papelera">Trash</span></div>
+                ${getAppIconHtml('trash')}
+                <div class="dock-dot"></div>
+            `;
+            trashEl.addEventListener('click', () => {
+                trashEl.classList.add('bouncing');
+                trashEl.addEventListener('animationend', () => trashEl.classList.remove('bouncing'), { once: true });
+                openApp({ id: 'trash', name: 'Trash', type: 'app' });
+            });
+            dk.appendChild(trashEl);
+
             // --- Dock Magnification Effect (Gaussian falloff) ---
             const icons = dk.querySelectorAll('.dock-item');
             const baseSize = 52;
@@ -2970,6 +3166,8 @@
                 content = renderProfilerApp(item.activeId || 'premiere');
             } else if (item.id === 'terminal') {
                 content = renderTerminalApp();
+            } else if (item.id === 'trash') {
+                content = renderTrashApp();
             } else if (item.id === 'app_playground') {
                 content = `<iframe src="about:blank" class="playground-frame"></iframe>`; // Placeholder
             } else {
@@ -4792,19 +4990,23 @@ After Effects, DaVinci Resolve, and Figma.`;
         });
 
         // Dismiss context menu on click
-        document.addEventListener('click', () => {
+        document.addEventListener('click', (e) => {
             const menu = $('#context-menu');
             if (menu) menu.style.display = 'none';
             closeMenubarMenu();
+            const cc = document.getElementById('control-center');
+            if (cc && !e.target.closest('#control-center, #cc-trigger')) cc.style.display = 'none';
         });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', e => {
-            // Escape — dismiss context menu & menu bar dropdowns
+            // Escape — dismiss context menu, menu bar dropdowns & Control Center
             if (e.key === 'Escape') {
                 const menu = $('#context-menu');
                 if (menu) menu.style.display = 'none';
                 closeMenubarMenu();
+                const cc = document.getElementById('control-center');
+                if (cc) cc.style.display = 'none';
             }
             // ⌘K / Ctrl+K or ⌘Space / Ctrl+Space — Spotlight
             if ((e.metaKey || e.ctrlKey) && (e.key.toLowerCase() === 'k' || e.key === ' ')) {
@@ -5034,6 +5236,198 @@ After Effects, DaVinci Resolve, and Figma.`;
                 setTimeout(() => hint.remove(), 700);
             }, 4500);
         }
+
+        /* --- TRASH APP --- */
+        function renderTrashApp() {
+            const files = [
+                { name: 'logo_final_v1.png', icon: '🖼️' },
+                { name: 'logo_final_v2_REAL.png', icon: '🖼️' },
+                { name: 'logo_FINAL_definitivo.png', icon: '🖼️' },
+                { name: 'render_de_8_horas.mp4', icon: '🎞️' },
+                { name: 'el_cliente_dijo_no.mp4', icon: '🎞️' },
+                { name: 'ideas_a_las_3am.txt', icon: '📄' }
+            ];
+            const note = currentLang === 'es' ? 'Todo gran portfolio esconde algunos descartes…' : 'Every great portfolio hides a few rejected drafts…';
+            const emptyLabel = currentLang === 'es' ? 'Vaciar' : 'Empty';
+            return `
+                <div style="display:flex; flex-direction:column; height:100%; background:#181818; color:#fff;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 15px; border-bottom:1px solid #2a2a2a; flex-shrink:0;">
+                        <span style="font-size:12px; color:#888;">${note}</span>
+                        <button onclick="emptyTrash(this)" style="background:rgba(255,255,255,0.1); border:0.5px solid rgba(255,255,255,0.15); color:#fff; padding:4px 14px; border-radius:6px; font-size:12px; font-weight:500; cursor:var(--cursor-pointer); font-family:inherit;">${emptyLabel}</button>
+                    </div>
+                    <div class="trash-grid" style="flex-grow:1; padding:20px; display:grid; grid-template-columns:repeat(auto-fill, minmax(90px,1fr)); gap:15px; align-content:start; overflow-y:auto; transition:opacity 0.5s ease;">
+                        ${files.map(f => `
+                            <div style="display:flex; flex-direction:column; align-items:center; text-align:center; padding:10px 5px; border-radius:6px;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">
+                                <div style="font-size:42px; margin-bottom:8px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5)) grayscale(0.35); opacity:0.85;">${f.icon}</div>
+                                <div style="font-size:11px; font-weight:500; word-break:break-word; color:#bbb;">${f.name}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.emptyTrash = function(btn) {
+            const win = btn.closest('.window');
+            const grid = win ? win.querySelector('.trash-grid') : null;
+            if (!grid || grid.dataset.empty) return;
+            grid.dataset.empty = '1';
+            grid.style.opacity = '0';
+            setTimeout(() => {
+                grid.style.display = 'flex';
+                grid.style.alignItems = 'center';
+                grid.style.justifyContent = 'center';
+                grid.innerHTML = `<div style="color:#555; font-size:13px;">${currentLang === 'es' ? 'La papelera está vacía' : 'The Trash is empty'}</div>`;
+                grid.style.opacity = '1';
+            }, 500);
+        };
+
+        /* --- WELCOME NOTIFICATION (macOS banner) --- */
+        function showWelcomeNotification() {
+            if (window._welcomeShown) return;
+            window._welcomeShown = true;
+            const n = document.createElement('div');
+            n.className = 'macos-notification';
+            const body = currentLang === 'es'
+                ? '¡Gracias por la visita! 👋 ¿Tenés un proyecto en mente? Escribime desde Mail.'
+                : 'Thanks for stopping by! 👋 Have a project in mind? Drop me a line via Mail.';
+            const now = currentLang === 'es' ? 'ahora' : 'now';
+            n.innerHTML = `
+                <div style="width:40px; height:40px; flex-shrink:0;">${getAppIconHtml('mail')}</div>
+                <div style="flex-grow:1; min-width:0;">
+                    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                        <span style="font-size:13px; font-weight:600; color:#fff;">Facundo Gelosa</span>
+                        <span style="font-size:11px; color:rgba(255,255,255,0.4);">${now}</span>
+                    </div>
+                    <div style="font-size:12.5px; color:rgba(255,255,255,0.75); line-height:1.35; margin-top:1px;">${body}</div>
+                </div>
+            `;
+            const dismiss = () => {
+                n.classList.remove('show');
+                n.style.opacity = '0';
+                setTimeout(() => n.remove(), 500);
+            };
+            n.addEventListener('click', () => {
+                dismiss();
+                openApp({ id: 'mail', name: 'Mail', type: 'app' });
+            });
+            document.body.appendChild(n);
+            requestAnimationFrame(() => n.classList.add('show'));
+            setTimeout(dismiss, 8000);
+        }
+
+        /* --- CONTROL CENTER --- */
+        const ccState = { wifi: true, bt: true, airdrop: true, focus: false };
+
+        window.ccToggleRow = function(el) {
+            const key = el.dataset.cc;
+            ccState[key] = !ccState[key];
+            const circle = el.querySelector('.cc-circle');
+            if (circle) circle.classList.toggle('on', ccState[key]);
+            const sub = el.querySelector('.cc-sub');
+            if (sub) sub.textContent = ccState[key] ? (el.dataset.subOn || 'On') : 'Off';
+        };
+
+        function buildControlCenter() {
+            if (document.getElementById('control-center')) return;
+
+            // Screen-dim overlay driven by the Display slider
+            const dim = document.createElement('div');
+            dim.id = 'brightness-overlay';
+            dim.style.cssText = 'position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; z-index:2000000; transition:opacity 0.15s ease;';
+            document.body.appendChild(dim);
+
+            const cc = document.createElement('div');
+            cc.id = 'control-center';
+            cc.innerHTML = `
+                <div class="cc-grid">
+                    <div class="cc-card" style="grid-row: span 2; display:flex; flex-direction:column; justify-content:space-between;">
+                        <div class="cc-row" data-cc="wifi" data-sub-on="FG-Studio 5G" onclick="ccToggleRow(this)">
+                            <div class="cc-circle on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg></div>
+                            <div><div class="cc-name">Wi-Fi</div><div class="cc-sub">FG-Studio 5G</div></div>
+                        </div>
+                        <div class="cc-row" data-cc="bt" data-sub-on="On" onclick="ccToggleRow(this)">
+                            <div class="cc-circle on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10-5 5V2l5 5L7 17"></path></svg></div>
+                            <div><div class="cc-name">Bluetooth</div><div class="cc-sub">On</div></div>
+                        </div>
+                        <div class="cc-row" data-cc="airdrop" data-sub-on="Everyone" onclick="ccToggleRow(this)">
+                            <div class="cc-circle on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="14" r="2.4" fill="currentColor" stroke="none"></circle><path d="M7.7 10a6 6 0 0 1 8.6 0"></path><path d="M4.9 7a10 10 0 0 1 14.2 0"></path></svg></div>
+                            <div><div class="cc-name">AirDrop</div><div class="cc-sub">Everyone</div></div>
+                        </div>
+                    </div>
+                    <div class="cc-card cc-center" data-cc="focus" data-sub-on="On" onclick="ccToggleRow(this)">
+                        <div class="cc-circle"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"></path></svg></div>
+                        <div><div class="cc-name"><span data-lang-en="Focus" data-lang-es="Concentración">Focus</span></div><div class="cc-sub">Off</div></div>
+                    </div>
+                    <div class="cc-card cc-center" style="opacity:0.5; cursor:default;">
+                        <div class="cc-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"></rect><path d="M8 21h8"></path></svg></div>
+                        <div class="cc-name" style="font-size:11px;"><span data-lang-en="Screen Mirroring" data-lang-es="Duplicar pantalla">Screen Mirroring</span></div>
+                    </div>
+                </div>
+                <div class="cc-card" style="margin-top:8px;">
+                    <div class="cc-name"><span data-lang-en="Display" data-lang-es="Pantalla">Display</span></div>
+                    <input type="range" class="cc-slider" id="cc-brightness" min="30" max="100" value="100">
+                </div>
+                <div class="cc-card" style="margin-top:8px;">
+                    <div class="cc-name"><span data-lang-en="Sound" data-lang-es="Sonido">Sound</span></div>
+                    <input type="range" class="cc-slider" id="cc-volume" min="0" max="100" value="70">
+                </div>
+                <div class="cc-card" style="margin-top:8px; display:flex; align-items:center; gap:10px; cursor:var(--cursor-pointer);" onclick="document.getElementById('control-center').style.display='none'; openApp({id:'spotify', name:'Spotify', type:'app'});">
+                    <div style="width:34px; height:34px; flex-shrink:0;">${getAppIconHtml('spotify')}</div>
+                    <div style="min-width:0;">
+                        <div class="cc-name"><span data-lang-en="My Editing Playlist" data-lang-es="Mi playlist de edición">My Editing Playlist</span></div>
+                        <div class="cc-sub"><span data-lang-en="Tap to open Spotify" data-lang-es="Tocá para abrir Spotify">Tap to open Spotify</span></div>
+                    </div>
+                    <div style="margin-left:auto; font-size:15px; opacity:0.8; color:#fff;">▶</div>
+                </div>
+            `;
+            document.body.appendChild(cc);
+            cc.addEventListener('click', e => e.stopPropagation());
+
+            cc.querySelector('#cc-brightness').addEventListener('input', e => {
+                dim.style.opacity = ((100 - e.target.value) / 100) * 0.8;
+            });
+            cc.querySelector('#cc-volume').addEventListener('input', e => {
+                const v = parseInt(e.target.value, 10);
+                document.querySelectorAll('iframe').forEach(f => {
+                    try {
+                        f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'setVolume', args: [v] }), '*');
+                    } catch (err) { /* cross-origin frames that don't support the API */ }
+                });
+            });
+        }
+
+        function toggleControlCenter() {
+            buildControlCenter();
+            const cc = document.getElementById('control-center');
+            const visible = cc.style.display === 'block';
+            cc.style.display = visible ? 'none' : 'block';
+            if (!visible && typeof updateTranslations === 'function') updateTranslations();
+        }
+
+        const ccTrigger = document.getElementById('cc-trigger');
+        if (ccTrigger) {
+            ccTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeMenubarMenu();
+                toggleControlCenter();
+            });
+        }
+
+        /* --- SUBTLE WALLPAPER PARALLAX --- */
+        let parallaxPending = false;
+        document.addEventListener('mousemove', (e) => {
+            if (parallaxPending) return;
+            parallaxPending = true;
+            requestAnimationFrame(() => {
+                const dt = $('#desktop');
+                if (dt) {
+                    dt.style.setProperty('--par-x', ((e.clientX / window.innerWidth - 0.5) * -10) + 'px');
+                    dt.style.setProperty('--par-y', ((e.clientY / window.innerHeight - 0.5) * -6) + 'px');
+                }
+                parallaxPending = false;
+            });
+        });
 
         /* --- RESUME DOWNLOAD --- */
         function downloadResume() {

@@ -28,7 +28,7 @@
             --key-color: #007aff;
             --text-main: #f5f5f7;
             --text-secondary: rgba(255, 255, 255, 0.45);
-            --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+            --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", 'Inter', 'Helvetica Neue', sans-serif;
 
             /* Traffic Lights */
             --win-red: #ff5f57;
@@ -209,9 +209,18 @@
         }
 
         #apple-logo {
-            font-size: 80px;
+            width: 72px;
+            height: 88px;
             color: #fff;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #apple-logo svg {
+            width: 100%;
+            height: 100%;
         }
 
         #boot-load-bar-container {
@@ -251,17 +260,17 @@
             isolation: isolate; /* Keep ::before/::after within this stacking context */
         }
 
-        /* Blurred wallpaper layer */
+        /* Wallpaper layer (sharp, like a real macOS desktop — only the login screen blurs it) */
         #desktop::before {
             content: '';
             position: absolute;
-            top: -20px;
-            left: -20px;
-            right: -20px;
-            bottom: -20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: url('wallpaper.png') no-repeat center center;
             background-size: cover;
-            filter: blur(28px) brightness(0.55) saturate(1.2);
+            filter: brightness(0.78) saturate(1.1);
             z-index: -2;
         }
 
@@ -273,7 +282,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.12;
+            opacity: 0.07;
             z-index: -1;
             pointer-events: none;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
@@ -287,7 +296,7 @@
             position: absolute;
             border-radius: 50%;
             filter: blur(120px);
-            opacity: 0.55;
+            opacity: 0.3;
             animation: float 25s infinite ease-in-out alternate;
             z-index: -1;
             pointer-events: none;
@@ -343,9 +352,16 @@
         }
 
         .apple-icon {
-            font-size: 15px;
+            display: flex;
+            align-items: center;
             margin-right: 2px;
-            opacity: 0.9;
+            opacity: 0.95;
+        }
+
+        .apple-icon svg {
+            width: 13px;
+            height: 16px;
+            display: block;
         }
 
         .app-name {
@@ -765,15 +781,14 @@
         }
 
         .ctx-item {
-            padding: 4px 16px;
+            padding: 4px 11px;
+            margin: 0 5px;
+            border-radius: 5px;
             cursor: var(--cursor-default);
         }
 
         .ctx-item:hover {
             background: var(--key-color);
-            border-radius: 4px;
-            margin: 0 5px;
-            padding: 4px 11px;
         }
 
         .ctx-separator {
@@ -785,6 +800,62 @@
         .ctx-disabled {
             color: rgba(255, 255, 255, 0.3);
             pointer-events: none;
+        }
+
+        /* --- MENU BAR DROPDOWN MENUS --- */
+        .menubar-menu {
+            position: fixed;
+            background: rgba(36, 36, 38, 0.9);
+            backdrop-filter: blur(30px) saturate(1.5);
+            -webkit-backdrop-filter: blur(30px) saturate(1.5);
+            border: 0.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 5px 0;
+            min-width: 230px;
+            z-index: 99999;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            font-size: 13px;
+            animation: menuPop 0.12s ease-out;
+        }
+
+        @keyframes menuPop {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menubar-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+            padding: 3px 11px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: var(--cursor-default);
+            white-space: nowrap;
+        }
+
+        .menubar-item:hover {
+            background: var(--key-color);
+        }
+
+        .menubar-item.disabled {
+            color: rgba(255, 255, 255, 0.3);
+            pointer-events: none;
+        }
+
+        .menubar-shortcut {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .menubar-item:hover .menubar-shortcut {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .menu-left span.menu-open {
+            background: rgba(255, 255, 255, 0.18);
         }
 
         /* Dock notification badge */
@@ -1619,7 +1690,7 @@
 
     <!-- BOOT SCREEN -->
     <div id="boot-screen">
-        <div id="apple-logo"></div>
+        <div id="apple-logo"><svg viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg></div>
         <div id="boot-load-bar-container">
             <div id="boot-load-bar"></div>
         </div>
@@ -1674,14 +1745,14 @@
     <!-- MENU BAR -->
     <div id="menu-bar">
         <div class="menu-left">
-            <span class="apple-icon" id="apple-menu-btn" style="cursor: var(--cursor-pointer);"></span>
-            <span class="app-name">Finder</span>
-            <span>File</span>
-            <span>Edit</span>
-            <span>View</span>
-            <span>Go</span>
-            <span>Window</span>
-            <span>Help</span>
+            <span class="apple-icon" id="apple-menu-btn" data-menu="apple" style="cursor: var(--cursor-pointer);"><svg viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg></span>
+            <span class="app-name" data-menu="app">Finder</span>
+            <span data-menu="file">File</span>
+            <span data-menu="edit">Edit</span>
+            <span data-menu="view">View</span>
+            <span data-menu="go">Go</span>
+            <span data-menu="window">Window</span>
+            <span data-menu="help">Help</span>
         </div>
         <div class="menu-right">
             <!-- Spotlight Trigger -->
@@ -1694,8 +1765,10 @@
             </div>
             <!-- macOS Status Icons -->
             <svg class="menu-status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-            <svg class="menu-status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="18" height="12" rx="2" ry="2"></rect><line x1="23" y1="13" x2="23" y2="11"></line></svg>
-            <svg class="menu-status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+            <!-- Battery (with charge level, like the real menu bar) -->
+            <svg class="menu-status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;"><rect x="1" y="7" width="19" height="10" rx="2.5"></rect><rect x="3" y="9" width="13" height="6" rx="1" fill="currentColor" stroke="none"></rect><path d="M22.5 10.5v3"></path></svg>
+            <!-- Control Center -->
+            <svg class="menu-status-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4.5" width="24" height="8.5" rx="4.25"></rect><circle cx="21.5" cy="8.75" r="2.6" fill="currentColor" stroke="none"></circle><rect x="2" y="15" width="24" height="8.5" rx="4.25"></rect><circle cx="6.5" cy="19.25" r="2.6" fill="currentColor" stroke="none"></circle></svg>
             <!-- Time/Date will be updated by JS -->
             <span id="clock">Fri Jan 5 10:41 AM</span>
         </div>
@@ -1875,6 +1948,7 @@
         /* --- STATE --- */
         let zIndex = 100;
         let windows = {};
+        let currentLang = 'en';
 
         // Global TikTok App State
         window.tiktokState = {
@@ -2359,8 +2433,15 @@
 
         function updateClock() {
             const now = new Date();
-            const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            let dateStr, timeStr;
+            if (currentLang === 'es') {
+                // Spanish macOS format: "vie 5 jun 10:41" (24h clock)
+                dateStr = now.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' }).replace(/[,.]/g, '');
+                timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+            } else {
+                dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            }
             $('#clock').textContent = `${dateStr} ${timeStr}`;
         }
         setInterval(updateClock, 1000);
@@ -2396,6 +2477,7 @@
             const langBtn = document.getElementById('lang-toggle');
             if (langBtn) langBtn.innerHTML = currentLang === 'en' ? '<span>🇺🇸 EN</span>' : '<span>🇪🇸 ES</span>';
             updateTranslations();
+            updateClock();
 
             const loginScreen = $('#login-screen');
             loginScreen.style.opacity = '0';
@@ -2561,10 +2643,7 @@
             { name: 'Design & Photo Assets', nameEs: 'Recursos de Diseño y Foto', icon: '🎨', type: 'folder', action: () => openApp({id: 'folder_design', name: 'Design & Photo', type: 'folder'}) },
             { name: 'Social UGC Campaigns', nameEs: 'Campañas de Contenido UGC', icon: '📱', type: 'app', action: () => openApp({id: 'social', name: 'Social UGC', type: 'app'}) },
             { name: 'Case Studies & Process', nameEs: 'Casos de Estudio', icon: '📓', type: 'app', action: () => openApp({id: 'casestudies', name: 'Case Studies', type: 'app'}) },
-            { name: 'About Facundo Gelosa', nameEs: 'Sobre Facundo Gelosa', icon: '', type: 'system', action: () => {
-                const el = document.getElementById('apple-menu-btn');
-                if (el) el.click();
-            }},
+            { name: 'About Facundo Gelosa', nameEs: 'Sobre Facundo Gelosa', icon: '👤', type: 'system', action: () => openAboutMac() },
             { name: 'Mail / Contact Form', nameEs: 'Correo / Contacto', icon: '✉️', type: 'app', action: () => openApp({id: 'mail', name: 'Mail', type: 'app'}) },
             { name: 'Spotify Player', nameEs: 'Reproductor de Spotify', icon: '🎵', type: 'app', action: () => openApp({id: 'spotify', name: 'Spotify', type: 'app'}) },
             { name: 'Download Resume (PDF)', nameEs: 'Descargar Curriculum (PDF)', icon: '📄', type: 'action', action: () => downloadResume() },
@@ -2712,23 +2791,14 @@
                 // Drag Logic (Simple Absolute Movement)
                 makeDraggable(el);
 
-                let startDragX = 0;
-                let startDragY = 0;
+                // Single click selects, double click opens (real macOS behavior)
                 el.addEventListener('mousedown', (e) => {
                     e.stopPropagation();
-                    startDragX = e.clientX;
-                    startDragY = e.clientY;
                     document.querySelectorAll('.desktop-icon-container, .desktop-png-icon').forEach(i => i.classList.remove('selected'));
                     el.classList.add('selected');
                 });
 
-                el.addEventListener('mouseup', (e) => {
-                    const diffX = Math.abs(e.clientX - startDragX);
-                    const diffY = Math.abs(e.clientY - startDragY);
-                    if (diffX < 6 && diffY < 6) {
-                        openApp(item);
-                    }
-                });
+                el.addEventListener('dblclick', () => openApp(item));
 
                 dt.appendChild(el);
             });
@@ -2818,6 +2888,9 @@
 
             dk.addEventListener('mousemove', (e) => {
                 icons.forEach(icon => {
+                    // Track the cursor almost instantly while inside the dock —
+                    // a long transition here makes the magnification feel laggy
+                    icon.style.transition = 'width 60ms ease-out, height 60ms ease-out';
                     const rect = icon.getBoundingClientRect();
                     const center = rect.left + rect.width / 2;
                     const dist = Math.abs(e.clientX - center);
@@ -2832,6 +2905,7 @@
 
             dk.addEventListener('mouseleave', () => {
                 icons.forEach(icon => {
+                    icon.style.transition = 'width 220ms ease, height 220ms ease';
                     icon.style.width = baseSize + 'px';
                     icon.style.height = baseSize + 'px';
                 });
@@ -3127,7 +3201,7 @@
             }
         }
 
-        $('#apple-menu-btn').addEventListener('click', () => {
+        function openAboutMac() {
             if (windows['about']) {
                 focusWindow(windows['about']);
                 return;
@@ -3153,7 +3227,7 @@
             // Center it on screen
             win.style.left = (window.innerWidth/2 - 150) + 'px';
             win.style.top = (window.innerHeight/2 - 200) + 'px';
-        });
+        }
 
         function minimizeWindow(id, win) {
             // Mute TikTok video if active
@@ -3360,7 +3434,13 @@
         function bindFinderEvents(win) {
             const contentArea = win.querySelector('.finder-content');
             if (contentArea) {
+                // Single click selects the file, double click opens it (real Finder behavior)
                 contentArea.addEventListener('click', (e) => {
+                    const fileItem = e.target.closest('.file-item');
+                    contentArea.querySelectorAll('.file-item.selected').forEach(i => i.classList.remove('selected'));
+                    if (fileItem) fileItem.classList.add('selected');
+                });
+                contentArea.addEventListener('dblclick', (e) => {
                     const fileItem = e.target.closest('.file-item');
                     if (fileItem) {
                         const fileName = fileItem.querySelector('.file-name').innerText;
@@ -4649,16 +4729,17 @@ After Effects, DaVinci Resolve, and Figma.`;
         }
 
         /* --- LANGUAGE SYSTEM --- */
-        let currentLang = 'en';
+        /* (currentLang is declared in the STATE section, before its first use in updateClock) */
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'es' : 'en';
-            
+
             // Update Toggle Button Text
             const langBtn = document.getElementById('lang-toggle');
             if (langBtn) langBtn.innerHTML = currentLang === 'en' ? '<span>🇺🇸 EN</span>' : '<span>🇪🇸 ES</span>';
-            
+
             updateTranslations();
+            updateClock();
         }
 
         function updateTranslations() {
@@ -4714,14 +4795,16 @@ After Effects, DaVinci Resolve, and Figma.`;
         document.addEventListener('click', () => {
             const menu = $('#context-menu');
             if (menu) menu.style.display = 'none';
+            closeMenubarMenu();
         });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', e => {
-            // Escape — dismiss context menu
+            // Escape — dismiss context menu & menu bar dropdowns
             if (e.key === 'Escape') {
                 const menu = $('#context-menu');
                 if (menu) menu.style.display = 'none';
+                closeMenubarMenu();
             }
             // ⌘K / Ctrl+K or ⌘Space / Ctrl+Space — Spotlight
             if ((e.metaKey || e.ctrlKey) && (e.key.toLowerCase() === 'k' || e.key === ' ')) {
@@ -4737,6 +4820,196 @@ After Effects, DaVinci Resolve, and Figma.`;
                     closeWindow(id, focused);
                 }
             }
+            // ⌘M / Ctrl+M — minimize focused window
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'm') {
+                e.preventDefault();
+                const focused = document.querySelector('.window.focused');
+                if (focused) {
+                    const id = focused.id.replace('win-', '');
+                    minimizeWindow(id, focused);
+                }
+            }
+        });
+
+        /* --- MENU BAR DROPDOWN SYSTEM --- */
+        function focusedWin() {
+            return document.querySelector('.window.focused');
+        }
+
+        function closeFocusedWindow() {
+            const w = focusedWin();
+            if (w) closeWindow(w.id.replace('win-', ''), w);
+        }
+
+        function minimizeFocusedWindow() {
+            const w = focusedWin();
+            if (w) minimizeWindow(w.id.replace('win-', ''), w);
+        }
+
+        function systemSleep() {
+            const ov = document.createElement('div');
+            ov.style.cssText = 'position:fixed; inset:0; background:#000; z-index:1000001; opacity:0; transition:opacity 0.9s ease; cursor:var(--cursor-default);';
+            document.body.appendChild(ov);
+            requestAnimationFrame(() => ov.style.opacity = '1');
+            const wake = () => {
+                ov.style.opacity = '0';
+                setTimeout(() => ov.remove(), 900);
+                window.removeEventListener('keydown', wake);
+            };
+            setTimeout(() => {
+                ov.addEventListener('click', wake);
+                window.addEventListener('keydown', wake);
+            }, 950);
+        }
+
+        function systemShutDown() {
+            const ov = document.createElement('div');
+            ov.style.cssText = 'position:fixed; inset:0; background:#000; z-index:1000002; opacity:0; transition:opacity 1.2s ease; display:flex; align-items:center; justify-content:center;';
+            document.body.appendChild(ov);
+            requestAnimationFrame(() => ov.style.opacity = '1');
+            setTimeout(() => {
+                const label = currentLang === 'es' ? 'Hacé clic para encender' : 'Click to power on';
+                ov.innerHTML = `<div style="color:rgba(255,255,255,0.3); font-size:13px; font-family:var(--font-ui); cursor:var(--cursor-pointer); display:flex; align-items:center; gap:8px;"><span style="font-size:18px;">⏻</span> ${label}</div>`;
+                ov.addEventListener('click', () => location.reload());
+            }, 1600);
+        }
+
+        function lockScreen() {
+            const ls = $('#login-screen');
+            if (!ls) return;
+            ls.style.display = 'flex';
+            requestAnimationFrame(() => ls.style.opacity = '1');
+        }
+
+        const MENUBAR_MENUS = {
+            apple: () => [
+                { en: 'About This Mac', es: 'Acerca de este Mac', action: openAboutMac },
+                { sep: true },
+                { en: 'System Settings…', es: 'Ajustes del Sistema…', action: () => openProfilerApp('premiere') },
+                { en: 'App Store…', es: 'App Store…', disabled: true },
+                { sep: true },
+                { en: 'Sleep', es: 'Reposo', action: systemSleep },
+                { en: 'Restart…', es: 'Reiniciar…', action: () => location.reload() },
+                { en: 'Shut Down…', es: 'Apagar…', action: systemShutDown },
+                { sep: true },
+                { en: 'Lock Screen', es: 'Bloquear pantalla', shortcut: '⌃⌘Q', action: lockScreen },
+                { en: 'Log Out Facundo Gelosa…', es: 'Cerrar sesión de Facundo Gelosa…', shortcut: '⇧⌘Q', action: lockScreen }
+            ],
+            app: () => [
+                { en: 'About This Portfolio', es: 'Acerca de este Portfolio', action: openAboutMac },
+                { sep: true },
+                { en: 'Hide', es: 'Ocultar', shortcut: '⌘H', action: minimizeFocusedWindow },
+                { sep: true },
+                { en: 'Quit', es: 'Salir', shortcut: '⌘Q', action: closeFocusedWindow }
+            ],
+            file: () => [
+                { en: 'New Finder Window', es: 'Nueva ventana del Finder', shortcut: '⌘N', action: () => openApp({ id: 'finder', name: 'Finder', type: 'folder' }) },
+                { en: 'New Folder', es: 'Nueva carpeta', shortcut: '⇧⌘N', disabled: true },
+                { sep: true },
+                { en: 'View Resume.pdf', es: 'Ver CV.pdf', shortcut: '⌘O', action: downloadResume },
+                { en: 'Get Info', es: 'Obtener información', shortcut: '⌘I', action: openAboutMac },
+                { sep: true },
+                { en: 'Close Window', es: 'Cerrar ventana', shortcut: '⌘W', action: closeFocusedWindow }
+            ],
+            edit: () => [
+                { en: 'Undo', es: 'Deshacer', shortcut: '⌘Z', disabled: true },
+                { en: 'Redo', es: 'Rehacer', shortcut: '⇧⌘Z', disabled: true },
+                { sep: true },
+                { en: 'Cut', es: 'Cortar', shortcut: '⌘X', disabled: true },
+                { en: 'Copy', es: 'Copiar', shortcut: '⌘C', disabled: true },
+                { en: 'Paste', es: 'Pegar', shortcut: '⌘V', disabled: true },
+                { en: 'Select All', es: 'Seleccionar todo', shortcut: '⌘A', disabled: true }
+            ],
+            view: () => [
+                { en: '✓ as Icons', es: '✓ como iconos', shortcut: '⌘1', action: () => {} },
+                { en: ' as List', es: ' como lista', shortcut: '⌘2', disabled: true },
+                { en: ' as Columns', es: ' como columnas', shortcut: '⌘3', disabled: true },
+                { sep: true },
+                { en: 'Show View Options', es: 'Mostrar opciones de visualización', shortcut: '⌘J', disabled: true }
+            ],
+            go: () => [
+                { en: '🖥️ Desktop', es: '🖥️ Escritorio', shortcut: '⇧⌘D', action: () => openApp({ id: 'finder', name: 'Desktop', type: 'folder' }) },
+                { sep: true },
+                { en: '🎥 Filmmaking', es: '🎥 Dirección & Video', action: () => openApp({ id: 'folder_video', name: 'Filmmaking', type: 'folder' }) },
+                { en: '🎬 Motion Graphics', es: '🎬 Animación Motion', action: () => openApp({ id: 'folder_motion', name: 'Motion Graphics', type: 'folder' }) },
+                { en: '🎨 Design & Photo', es: '🎨 Diseño y Foto', action: () => openApp({ id: 'folder_design', name: 'Design & Photo', type: 'folder' }) }
+            ],
+            window: () => [
+                { en: 'Minimize', es: 'Minimizar', shortcut: '⌘M', action: minimizeFocusedWindow },
+                { en: 'Zoom', es: 'Zoom', action: () => { const w = focusedWin(); if (w) toggleMaximize(w); } },
+                { sep: true },
+                { en: 'Bring All to Front', es: 'Traer todo al frente', disabled: true }
+            ],
+            help: () => [
+                { en: 'Portfolio Help', es: 'Ayuda del Portfolio', action: () => showOSAlert(
+                    currentLang === 'es' ? 'Bienvenido 👋' : 'Welcome 👋',
+                    currentLang === 'es'
+                        ? 'Hacé doble clic en las carpetas e iconos del escritorio para explorar mi trabajo. Probá también la Terminal y Spotlight (⌘K).'
+                        : 'Double-click the desktop folders & icons to explore my work. Also try the Terminal and Spotlight (⌘K).',
+                    '💡') },
+                { sep: true },
+                { en: 'Open Terminal', es: 'Abrir Terminal', action: () => openApp({ id: 'terminal', name: 'Terminal', type: 'app' }) }
+            ]
+        };
+
+        let openMenubarSpan = null;
+
+        function closeMenubarMenu() {
+            document.querySelectorAll('.menubar-menu').forEach(m => m.remove());
+            document.querySelectorAll('.menu-left span.menu-open').forEach(s => s.classList.remove('menu-open'));
+            openMenubarSpan = null;
+        }
+
+        function openMenubarMenu(span) {
+            closeMenubarMenu();
+            const getItems = MENUBAR_MENUS[span.dataset.menu];
+            if (!getItems) return;
+
+            const menu = document.createElement('div');
+            menu.className = 'menubar-menu';
+
+            getItems().forEach(it => {
+                if (it.sep) {
+                    const sep = document.createElement('div');
+                    sep.className = 'ctx-separator';
+                    menu.appendChild(sep);
+                    return;
+                }
+                const item = document.createElement('div');
+                item.className = 'menubar-item' + (it.disabled ? ' disabled' : '');
+                const label = (currentLang === 'es' && it.es) ? it.es : it.en;
+                item.innerHTML = `<span>${label}</span>${it.shortcut ? `<span class="menubar-shortcut">${it.shortcut}</span>` : ''}`;
+                if (it.action) {
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        closeMenubarMenu();
+                        it.action();
+                    });
+                }
+                menu.appendChild(item);
+            });
+
+            document.body.appendChild(menu);
+            const r = span.getBoundingClientRect();
+            menu.style.top = '27px';
+            menu.style.left = Math.max(8, Math.min(r.left - 8, window.innerWidth - menu.offsetWidth - 8)) + 'px';
+            span.classList.add('menu-open');
+            openMenubarSpan = span;
+        }
+
+        document.querySelectorAll('.menu-left span').forEach(span => {
+            span.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (openMenubarSpan === span) {
+                    closeMenubarMenu();
+                } else {
+                    openMenubarMenu(span);
+                }
+            });
+            // Once a menu is open, hovering across titles switches menus (real macOS behavior)
+            span.addEventListener('mouseenter', () => {
+                if (openMenubarSpan && openMenubarSpan !== span) openMenubarMenu(span);
+            });
         });
 
         /* --- ONBOARDING HINT --- */

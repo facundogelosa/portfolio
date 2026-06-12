@@ -9,11 +9,14 @@
     <meta property="og:title" content="Facundo Gelosa — Motion Designer & Filmmaker">
     <meta property="og:description" content="macOS-style interactive portfolio. Explore filmmaking, motion graphics, and design work.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="wallpaper.png">
+    <meta property="og:url" content="https://facundogelosa.github.io/portfolio/CLAUDE/">
+    <meta property="og:image" content="https://facundogelosa.github.io/portfolio/CLAUDE/wallpaper.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Facundo Gelosa — Motion Designer & Filmmaker">
     <meta name="twitter:description" content="macOS-style interactive portfolio. Explore filmmaking, motion graphics, and design work.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta name="twitter:image" content="https://facundogelosa.github.io/portfolio/CLAUDE/wallpaper.png">
+    <meta name="theme-color" content="#08080c">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23242430'/%3E%3Cstop offset='100%25' stop-color='%230c0c12'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Crect x='1' y='1' width='62' height='62' rx='13' fill='none' stroke='rgba(255,255,255,0.14)'/%3E%3Ctext x='32' y='42' font-family='Helvetica,Arial,sans-serif' font-size='25' font-weight='700' fill='%23ffffff' text-anchor='middle' letter-spacing='-1'%3EFG%3C/text%3E%3C/svg%3E">    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -133,6 +136,34 @@
             background-size: cover;
             filter: blur(28px) brightness(0.55) saturate(1.2);
             z-index: -1;
+        }
+
+        /* Big lock-screen clock, like the real macOS login */
+        #login-clock-wrap {
+            position: absolute;
+            top: 10%;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        #login-date {
+            font-size: 17px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            margin-bottom: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        #login-clock {
+            font-size: 86px;
+            font-weight: 700;
+            letter-spacing: -2.5px;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+            line-height: 1;
         }
 
         .login-avatar {
@@ -1904,6 +1935,20 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        /* Respect users who prefer less motion */
+        @media (prefers-reduced-motion: reduce) {
+            .ambient-orb,
+            .tiktok-marquee,
+            .tiktok-vinyl-disc.spinning,
+            .dock-item.bouncing,
+            .tiktok-heart-burst {
+                animation: none !important;
+            }
+            #desktop::before {
+                transition: none;
+            }
+        }
     </style>
 </head>
 
@@ -1919,6 +1964,10 @@
 
     <!-- LOGIN SCREEN -->
     <div id="login-screen">
+        <div id="login-clock-wrap">
+            <div id="login-date"></div>
+            <div id="login-clock"></div>
+        </div>
         <div class="login-avatar">FG</div>
         <div class="login-name">Facundo Gelosa</div>
         <div class="login-subtitle">Choose language to enter / Elige tu idioma</div>
@@ -1926,6 +1975,7 @@
             <button class="login-btn" onclick="login('en')">🇺🇸 English</button>
             <button class="login-btn" onclick="login('es')">🇪🇸 Español</button>
         </div>
+        <div style="margin-top:18px; font-size:11px; color:rgba(255,255,255,0.45); letter-spacing:0.4px;">Press Enter ↵ / Presioná Enter</div>
     </div>
 
     <!-- SPOTLIGHT SEARCH OVERLAY -->
@@ -2341,6 +2391,76 @@
         /* --- UTILS --- */
         const $ = s => document.querySelector(s);
 
+        /* --- SOUND DESIGN ---
+           Synthesized with WebAudio (no audio files). Master volume follows the
+           Control Center "Sound" slider. Every call is safe to fail silently. */
+        const sfx = (() => {
+            let ctx = null, master = null, volume = 0.7;
+            const ensure = () => {
+                try {
+                    if (!ctx) {
+                        const AC = window.AudioContext || window.webkitAudioContext;
+                        if (!AC) return false;
+                        ctx = new AC();
+                        master = ctx.createGain();
+                        master.gain.value = volume * 0.5;
+                        master.connect(ctx.destination);
+                    }
+                    if (ctx.state === 'suspended') ctx.resume();
+                    return true;
+                } catch (e) { return false; }
+            };
+            const tone = (freq, { dur = 0.15, type = 'sine', gain = 0.06, delay = 0, glide = 0 } = {}) => {
+                if (!ensure()) return;
+                try {
+                    const t0 = ctx.currentTime + delay;
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, t0);
+                    if (glide) osc.frequency.exponentialRampToValueAtTime(Math.max(40, freq + glide), t0 + dur);
+                    g.gain.setValueAtTime(0, t0);
+                    g.gain.linearRampToValueAtTime(gain, t0 + 0.012);
+                    g.gain.exponentialRampToValueAtTime(0.0008, t0 + dur);
+                    osc.connect(g); g.connect(master);
+                    osc.start(t0); osc.stop(t0 + dur + 0.05);
+                } catch (e) { /* never break UI for a sound */ }
+            };
+            const noise = ({ dur = 0.18, gain = 0.05, delay = 0 } = {}) => {
+                if (!ensure()) return;
+                try {
+                    const t0 = ctx.currentTime + delay;
+                    const len = Math.floor(ctx.sampleRate * dur);
+                    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+                    const data = buf.getChannelData(0);
+                    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+                    const src = ctx.createBufferSource();
+                    src.buffer = buf;
+                    const filt = ctx.createBiquadFilter();
+                    filt.type = 'bandpass';
+                    filt.frequency.value = 2400;
+                    const g = ctx.createGain();
+                    g.gain.value = gain;
+                    src.connect(filt); filt.connect(g); g.connect(master);
+                    src.start(t0);
+                } catch (e) { /* never break UI for a sound */ }
+            };
+            return {
+                setVolume(v) { volume = Math.max(0, Math.min(100, v)) / 100; if (master) master.gain.value = volume * 0.5; },
+                chime() { // soft startup chord (C-E-G-C arpeggio)
+                    tone(523.25, { dur: 1.6, gain: 0.05 });
+                    tone(659.25, { dur: 1.6, gain: 0.045, delay: 0.07 });
+                    tone(783.99, { dur: 1.8, gain: 0.04, delay: 0.14 });
+                    tone(1046.5, { dur: 2.1, gain: 0.024, delay: 0.22 });
+                },
+                open() { tone(420, { dur: 0.12, gain: 0.045, glide: 160 }); },
+                close() { tone(340, { dur: 0.1, gain: 0.035, glide: -120 }); },
+                minimize() { tone(540, { dur: 0.22, gain: 0.035, glide: -310 }); },
+                notify() { tone(880, { dur: 0.25, gain: 0.04 }); tone(1318.5, { dur: 0.3, gain: 0.03, delay: 0.09 }); },
+                trash() { noise({ dur: 0.22, gain: 0.07 }); noise({ dur: 0.14, gain: 0.05, delay: 0.08 }); }
+            };
+        })();
+
         const SYSTEM_ICONS = {
             finder: `<svg viewBox="0 0 64 64" style="width:100%; height:100%; display:block;">
   <defs>
@@ -2562,9 +2682,30 @@
                 timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
             }
             $('#clock').textContent = `${dateStr} ${timeStr}`;
+
+            // Big lock-screen clock (login screen) — uses the visitor's locale
+            const loginClock = $('#login-clock');
+            if (loginClock) {
+                const loc = navigator.language || 'en-US';
+                const isEs = loc.toLowerCase().startsWith('es');
+                loginClock.textContent = now.toLocaleTimeString(loc, isEs
+                    ? { hour: '2-digit', minute: '2-digit', hour12: false }
+                    : { hour: 'numeric', minute: '2-digit' });
+                const d = now.toLocaleDateString(loc, { weekday: 'long', day: 'numeric', month: 'long' });
+                $('#login-date').textContent = d.charAt(0).toUpperCase() + d.slice(1);
+            }
         }
         setInterval(updateClock, 1000);
         updateClock();
+
+        // Press Enter on the login screen to enter in your browser's language
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            const ls = $('#login-screen');
+            if (ls && ls.style.display === 'flex' && ls.style.opacity === '1') {
+                login((navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en');
+            }
+        });
 
         /* --- BOOT --- */
         window.onload = () => {
@@ -2593,6 +2734,8 @@
 
         function login(lang) {
             currentLang = lang;
+            document.documentElement.lang = lang;
+            sfx.chime();
             const langBtn = document.getElementById('lang-toggle');
             if (langBtn) langBtn.innerHTML = currentLang === 'en' ? '<span>🇺🇸 EN</span>' : '<span>🇪🇸 ES</span>';
             updateTranslations();
@@ -2687,7 +2830,7 @@
                 <div class="profiler-layout" style="display: flex; height: 100%; background: #0c0c10; color: #fff; font-family: var(--font-ui);">
                     <!-- Sidebar -->
                     <div class="profiler-sidebar" style="width: 180px; background: rgba(18, 18, 24, 0.45); border-right: 1px solid rgba(255, 255, 255, 0.08); padding-top: 15px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;">
-                        <div style="padding-left: 16px; font-size: 9px; font-weight: bold; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Applications</div>
+                        <div style="padding-left: 16px; font-size: 9px; font-weight: bold; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">${currentLang === 'es' ? 'Aplicaciones' : 'Applications'}</div>
                         ${sidebarHtml}
                     </div>
 
@@ -2707,7 +2850,7 @@
                         <!-- Skill Level Meter -->
                         <div style="margin-bottom: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7);">
-                                <span>Expertise Proficiency</span>
+                                <span>${currentLang === 'es' ? 'Nivel de dominio' : 'Expertise Proficiency'}</span>
                                 <span style="color: var(--key-color);">${data.level}%</span>
                             </div>
                             <div style="background: rgba(255,255,255,0.08); border-radius: 6px; height: 8px; overflow: hidden; width: 100%; margin-top: 8px;">
@@ -2719,7 +2862,7 @@
                         <p style="margin: 0 0 20px 0; font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.8);">${description}</p>
 
                         <!-- Workflow Core Features -->
-                        <div style="font-size: 10px; font-weight: bold; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Core Workflow & Specialties</div>
+                        <div style="font-size: 10px; font-weight: bold; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">${currentLang === 'es' ? 'Flujo de trabajo y especialidades' : 'Core Workflow & Specialties'}</div>
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
                             ${featuresHtml}
                         </div>
@@ -3144,6 +3287,7 @@
 
             $('#desktop').appendChild(win);
             focusWindow(win);
+            sfx.open();
 
             if (typeof updateTranslations === 'function') updateTranslations();
 
@@ -3229,6 +3373,7 @@
         }
 
         function closeWindow(id, win) {
+            sfx.close();
             win.classList.remove('visible');
             setTimeout(() => {
                 win.remove();
@@ -3258,7 +3403,8 @@
                 </div>
             `;
             document.body.appendChild(alertDiv);
-            
+            sfx.notify();
+
             // Trigger animation
             requestAnimationFrame(() => alertDiv.classList.add('visible'));
         }
@@ -3296,8 +3442,13 @@
             const subject = document.getElementById('mail-subject').value;
             const message = document.getElementById('mail-body').value;
 
+            const es = currentLang === 'es';
             if (!email || !message) {
-                alert('Please fill out your Email and Message fields.');
+                showOSAlert(
+                    es ? 'Faltan datos' : 'Missing fields',
+                    es ? 'Completá tu email y el mensaje antes de enviar.' : 'Please fill out your Email and Message fields.',
+                    '✉️'
+                );
                 return;
             }
 
@@ -3309,7 +3460,7 @@
             overlay.style.display = 'flex';
             spinner.style.display = 'block';
             closeBtn.style.display = 'none';
-            statusText.innerText = 'Sending email...';
+            statusText.innerText = es ? 'Enviando mensaje...' : 'Sending email...';
 
             try {
                 const response = await fetch("https://formsubmit.co/ajax/gelosafacundo@gmail.com", {
@@ -3328,7 +3479,9 @@
 
                 if (response.ok) {
                     spinner.style.display = 'none';
-                    statusText.innerHTML = '✅ Successfully sent!<br><small style="opacity:0.7">(Note: First time use requires activation link sent to your Gmail)</small>';
+                    statusText.innerHTML = es
+                        ? '✅ ¡Mensaje enviado! Te respondo a la brevedad.'
+                        : '✅ Successfully sent! I\'ll get back to you shortly.';
                     closeBtn.style.display = 'block';
                     // clear fields
                     document.getElementById('mail-subject').value = '';
@@ -3338,7 +3491,9 @@
                 }
             } catch (error) {
                 spinner.style.display = 'none';
-                statusText.innerText = '❌ Error sending message. Please try again.';
+                statusText.innerText = es
+                    ? '❌ No se pudo enviar. Probá de nuevo o escribime a gelosafacundo@gmail.com'
+                    : '❌ Error sending message. Please try again or email gelosafacundo@gmail.com';
                 closeBtn.style.display = 'block';
                 console.error(error);
             }
@@ -3387,6 +3542,7 @@
                 closeWindow(id, win);
                 return;
             }
+            sfx.minimize();
 
             // Save the original dimensions and position for restoration
             win._restoreRect = {
@@ -3649,7 +3805,7 @@
                             </button>
                         </div>
                     </div>
-                    <div style="padding:10px; text-align:center; font-size:9px; color:#333; flex-shrink:0;">Built with Antigravity · 2026</div>
+                    <div style="padding:10px; text-align:center; font-size:9px; color:#333; flex-shrink:0;">Hand-crafted by Facundo Gelosa · Argentina · 2026</div>
                 </div>
             `;
         }
@@ -3698,21 +3854,21 @@
                 <div class="mail-app" style="position:relative;">
                     <div class="mail-header">
                         <div class="mail-row">
-                            <span class="mail-label">To:</span>
+                            <span class="mail-label" data-lang-en="To:" data-lang-es="Para:">To:</span>
                             <input type="text" class="mail-input" value="gelosafacundo@gmail.com" readonly>
                         </div>
                         <div class="mail-row">
-                            <span class="mail-label">From:</span>
-                            <input type="email" class="mail-input" id="mail-from" placeholder="your@email.com">
+                            <span class="mail-label" data-lang-en="From:" data-lang-es="De:">From:</span>
+                            <input type="email" class="mail-input" id="mail-from" placeholder="${currentLang === 'es' ? 'tu@email.com' : 'your@email.com'}">
                         </div>
                         <div class="mail-row">
-                            <span class="mail-label">Subject:</span>
-                            <input type="text" class="mail-input" id="mail-subject" placeholder="Project Inquiry...">
+                            <span class="mail-label" data-lang-en="Subject:" data-lang-es="Asunto:">Subject:</span>
+                            <input type="text" class="mail-input" id="mail-subject" placeholder="${currentLang === 'es' ? 'Consulta por proyecto...' : 'Project Inquiry...'}">
                         </div>
                     </div>
-                    <textarea class="mail-body" id="mail-body" placeholder="Write your message here..."></textarea>
+                    <textarea class="mail-body" id="mail-body" placeholder="${currentLang === 'es' ? 'Escribí tu mensaje acá...' : 'Write your message here...'}"></textarea>
                     <div class="mail-send">
-                        <button class="btn-send" onclick="sendPortfolioEmail()">Send Message</button>
+                        <button class="btn-send" onclick="sendPortfolioEmail()" data-lang-en="Send Message" data-lang-es="Enviar mensaje">Send Message</button>
                     </div>
                     <!-- Status Overlay -->
                     <div id="mail-status-overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(30,30,30,0.85); flex-direction:column; align-items:center; justify-content:center; color:white; z-index:10;">
@@ -4076,8 +4232,11 @@
                 const onMove = moveEvt => {
                     const dx = moveEvt.clientX - startX;
                     const dy = moveEvt.clientY - startY;
-                    win.style.left = (initLeft + dx) + 'px';
-                    win.style.top = Math.max(25, initTop + dy) + 'px'; // Fix: prevent dragging under menu bar
+                    // Clamp so the title bar always stays reachable (can't lose a window off-screen)
+                    const minLeft = 90 - win.offsetWidth;
+                    const maxLeft = window.innerWidth - 90;
+                    win.style.left = Math.min(maxLeft, Math.max(minLeft, initLeft + dx)) + 'px';
+                    win.style.top = Math.min(window.innerHeight - 40, Math.max(25, initTop + dy)) + 'px';
                 };
 
                 document.body.classList.add('is-interacting');
@@ -4957,6 +5116,7 @@ After Effects, DaVinci Resolve, and Figma.`;
 
         function toggleLanguage() {
             currentLang = currentLang === 'en' ? 'es' : 'en';
+            document.documentElement.lang = currentLang;
 
             // Update Toggle Button Text
             const langBtn = document.getElementById('lang-toggle');
@@ -5244,10 +5404,11 @@ After Effects, DaVinci Resolve, and Figma.`;
         function showOnboarding() {
             const hint = document.createElement('div');
             hint.style.cssText = 'position:fixed; bottom:118px; left:50%; transform:translateX(-50%); background:rgba(28,28,30,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:0.5px solid rgba(255,255,255,0.15); border-radius:14px; padding:14px 24px; color:#fff; font-size:13px; z-index:99998; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.6); animation:hintFadeIn 0.45s cubic-bezier(0.16,1,0.3,1); pointer-events:none; white-space:nowrap; font-family:var(--font-ui);';
+            const es = currentLang === 'es';
             hint.innerHTML = `
                 <div style="font-size:22px; margin-bottom:6px;">👆</div>
-                <div style="font-weight:600; margin-bottom:3px; font-size:14px;">Welcome to my Portfolio</div>
-                <div style="opacity:0.6; font-size:12px;">Double-click folders &amp; icons to explore my work</div>
+                <div style="font-weight:600; margin-bottom:3px; font-size:14px;">${es ? 'Bienvenido a mi Portfolio' : 'Welcome to my Portfolio'}</div>
+                <div style="opacity:0.6; font-size:12px;">${es ? 'Hacé doble clic en las carpetas e iconos para explorar mi trabajo' : 'Double-click folders &amp; icons to explore my work'}</div>
             `;
             document.body.appendChild(hint);
             if (!document.getElementById('hint-style')) {
@@ -5298,6 +5459,7 @@ After Effects, DaVinci Resolve, and Figma.`;
             const grid = win ? win.querySelector('.trash-grid') : null;
             if (!grid || grid.dataset.empty) return;
             grid.dataset.empty = '1';
+            sfx.trash();
             grid.style.opacity = '0';
             setTimeout(() => {
                 grid.style.display = 'flex';
@@ -5338,6 +5500,7 @@ After Effects, DaVinci Resolve, and Figma.`;
                 openApp({ id: 'mail', name: 'Mail', type: 'app' });
             });
             document.body.appendChild(n);
+            sfx.notify();
             requestAnimationFrame(() => n.classList.add('show'));
             setTimeout(dismiss, 8000);
         }
@@ -5415,6 +5578,7 @@ After Effects, DaVinci Resolve, and Figma.`;
             });
             cc.querySelector('#cc-volume').addEventListener('input', e => {
                 const v = parseInt(e.target.value, 10);
+                sfx.setVolume(v);
                 document.querySelectorAll('iframe').forEach(f => {
                     try {
                         f.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'setVolume', args: [v] }), '*');
@@ -5441,8 +5605,10 @@ After Effects, DaVinci Resolve, and Figma.`;
         }
 
         /* --- SUBTLE WALLPAPER PARALLAX + CURSOR SPOTLIGHT --- */
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let parallaxPending = false;
         document.addEventListener('mousemove', (e) => {
+            if (prefersReducedMotion) return;
             if (parallaxPending) return;
             parallaxPending = true;
             requestAnimationFrame(() => {
@@ -5456,6 +5622,25 @@ After Effects, DaVinci Resolve, and Figma.`;
                 parallaxPending = false;
             });
         });
+
+        /* --- TAB TITLE WINK (when the visitor switches tabs) --- */
+        const originalTitle = document.title;
+        document.addEventListener('visibilitychange', () => {
+            document.title = document.hidden
+                ? (currentLang === 'es' ? '🎬 ¿Seguimos? — Facundo Gelosa' : '🎬 Come back! — Facundo Gelosa')
+                : originalTitle;
+        });
+
+        /* --- CONSOLE EASTER EGG (for the devs & technical recruiters peeking) --- */
+        try {
+            console.log(
+                '%c FG-OS %c hand-crafted by Facundo Gelosa ',
+                'background:#0a84ff; color:#fff; font-weight:700; font-size:14px; padding:6px 10px; border-radius:6px 0 0 6px;',
+                'background:#1c1c1e; color:#f5f5f7; font-size:14px; padding:6px 10px; border-radius:0 6px 6px 0;'
+            );
+            console.log('%cCurioso/a por el código? Hablemos → gelosafacundo@gmail.com', 'color:#8e8e93; font-size:12px;');
+            console.log("%cTip: escribí 'matrix' en la Terminal del escritorio 😉", 'color:#8e8e93; font-size:12px;');
+        } catch (e) { /* console may be unavailable */ }
 
         /* --- RESUME DOWNLOAD --- */
         function downloadResume() {

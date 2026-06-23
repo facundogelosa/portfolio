@@ -1578,6 +1578,13 @@
         .profiler-sidebar-item.active span {
             color: #fff !important;
         }
+        @keyframes profilerFadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .profiler-thumb:hover {
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.25);
+        }
 
         /* --- SPOTLIGHT SEARCH --- */
         #spotlight-overlay {
@@ -2137,80 +2144,108 @@
         ];
 
         const EXPERTISE_DB = {
-            'premiere': { 
-                title: 'Premiere Pro', 
+            'premiere': {
+                title: 'Premiere Pro',
                 level: 95,
                 years: '+5 years',
+                colors: ['#B24FFF', '#5B1FB8'],
                 text: 'Advanced video editing, storytelling pacing, dynamic timeline management, and sound design integration for high-end commercials, shorts, and documentaries.',
                 textEs: 'Edición de video avanzada, ritmo narrativo, gestión de líneas de tiempo complejas e integración de diseño sonoro para comerciales de alto nivel, shorts y documentales.',
                 features: ['Multi-cam Editing', 'Dynamic Link with AE', 'Audio Mixing & Denoising', 'Color Correction Lumetri'],
                 featuresEs: ['Edición Multi-cámara', 'Enlace Dinámico con AE', 'Mezcla y Reducción de Ruido', 'Corrección de Color Lumetri'],
-                relatedFolder: { id: 'folder_video', name: 'Filmmaking' }
+                relatedFolder: { id: 'folder_video', name: 'Filmmaking' },
+                featured: [
+                    { name: 'Paz González — En la Ciudad', youtubeId: 'U6p6HyXhM88' },
+                    { name: 'Paz González — INVIERNO Live', youtubeId: 'Dg0EXY-_IY8' },
+                    { name: 'WAREBLUES — Live Session', youtubeId: '7dXUkpjM-H8' }
+                ]
             },
-            'aftereffects': { 
-                title: 'After Effects', 
+            'aftereffects': {
+                title: 'After Effects',
                 level: 90,
                 years: '+4 years',
+                colors: ['#7B6CFF', '#3D2B96'],
                 text: 'High-fidelity motion graphics design, 2.5D animation, tracking, rotoscoping, VFX compositing, and dynamic typography templates.',
                 textEs: 'Diseño de motion graphics de alta fidelidad, animación 2.5D, tracking, rotoscopía, composición de VFX y plantillas dinámicas de tipografía.',
                 features: ['Keyframe Interpolation', '3D Camera Tracking', 'Expression Scripting', 'Element 3D & Trapcode'],
                 featuresEs: ['Interpolación de Keyframes', 'Tracking de Cámara 3D', 'Scripting de Expresiones', 'Element 3D & Trapcode'],
-                relatedFolder: { id: 'folder_motion', name: 'Motion Graphics' }
+                relatedFolder: { id: 'folder_motion', name: 'Motion Graphics' },
+                featured: [
+                    { name: 'Monks — VFX Composition', youtubeId: 'ScMzIvxBSi4' },
+                    { name: 'Motion Graphics Reel', youtubeId: 'DZmosOGfKys' },
+                    { name: 'UGC Storytelling Edit', youtubeId: 'vXeaH7kW5i4' }
+                ]
             },
-            'davinci': { 
-                title: 'DaVinci Resolve', 
+            'davinci': {
+                title: 'DaVinci Resolve',
                 level: 85,
                 years: '+3 years',
+                colors: ['#FF7A45', '#C2410C'],
                 text: 'Color grading specialist. Advanced usage of node structures, custom LUT generation, power windows, color space transforms, and HDR grading.',
                 textEs: 'Especialista en color grading. Uso avanzado de estructuras de nodos, generación de LUTs personalizadas, power windows y gradación HDR.',
                 features: ['Node-based Color Grading', 'Color Space Transform', 'Tracker & Power Windows', 'Fairlight Audio Polish'],
                 featuresEs: ['Gradación por Nodos', 'Transformación de Espacio de Color', 'Tracker & Ventanas de Máscara', 'Pulido de Audio Fairlight'],
-                relatedFolder: { id: 'folder_video', name: 'Filmmaking' }
+                relatedFolder: { id: 'folder_video', name: 'Filmmaking' },
+                featured: [
+                    { name: 'Paz González — Tu Dios', youtubeId: 'NQIDgr83_GM' },
+                    { name: 'WAREBLUES — Vintage Grade', youtubeId: '7dXUkpjM-H8' },
+                    { name: 'Paz González — En la Ciudad', youtubeId: 'U6p6HyXhM88' }
+                ]
             },
-            'photoshop': { 
-                title: 'Photoshop', 
+            'photoshop': {
+                title: 'Photoshop',
                 level: 95,
                 years: '+7 years',
+                colors: ['#34C3FF', '#0B5FB8'],
                 text: 'Digital art design, advanced photo manipulation, asset preparation for motion graphics, mockup designs, and high-CTR thumbnail creation.',
                 textEs: 'Diseño de arte digital, manipulación fotográfica avanzada, preparación de recursos para motion graphics, diseño de mockups y miniaturas de alto CTR.',
                 features: ['Non-destructive Layering', 'Generative Fill & AI tools', 'Complex Masking & Blending', 'Color Harmonization'],
                 featuresEs: ['Capas No Destructivas', 'Relleno Generativo e IA', 'Máscaras y Fusión Complejas', 'Armonización de Color'],
                 relatedFolder: { id: 'folder_design', name: 'Design & Photo' }
             },
-            'illustrator': { 
-                title: 'Illustrator', 
+            'illustrator': {
+                title: 'Illustrator',
                 level: 80,
                 years: '+5 years',
+                colors: ['#FFB13D', '#E07B00'],
                 text: 'Vector design, custom iconography, corporate branding, layout typography, and preparing layered vectors optimized for After Effects import.',
                 textEs: 'Diseño vectorial, iconografía personalizada, branding corporativo, maquetación tipográfica y preparación de vectores por capas optimizados para After Effects.',
                 features: ['Vector Path Manipulation', 'Anchor Point Optimization', 'Asset Export workflows', 'Advanced Typography'],
                 featuresEs: ['Manipulación de Trazados', 'Optimización de Puntos de Ancla', 'Flujos de Exportación', 'Tipografía Avanzada'],
                 relatedFolder: { id: 'folder_design', name: 'Design & Photo' }
             },
-            'capcut': { 
-                title: 'CapCut', 
+            'capcut': {
+                title: 'CapCut',
                 level: 90,
                 years: '+2 years',
+                colors: ['#FF3D77', '#00E5D4'],
                 text: 'Short-form UGC expert. Fast-paced storytelling, trendy visual effects, TikTok transitions, and high-retention audio pacing.',
                 textEs: 'Experto en UGC de formato corto. Narración de ritmo rápido, efectos visuales en tendencia, transiciones de TikTok y ritmo de audio de alta retención.',
                 features: ['Visual Effect Templates', 'Auto-captions styling', 'Keyframe Zooming', 'Sound FX Design'],
                 featuresEs: ['Plantillas de Efectos', 'Subtítulos Automáticos', 'Zóom por Keyframes', 'Diseño de SFX de Audio'],
-                relatedFolder: { id: 'social', name: 'Social UGC' }
+                relatedFolder: { id: 'social', name: 'Social UGC' },
+                featured: [
+                    { name: 'UGC Short #1', youtubeId: 'SmaZu5YiRdA' },
+                    { name: 'UGC Short #2', youtubeId: 'Cbc2vB4K2QE' },
+                    { name: 'UGC Short #3', youtubeId: 'PJSYdYZ5jwA' }
+                ]
             },
-            'figma': { 
-                title: 'Figma', 
+            'figma': {
+                title: 'Figma',
                 level: 85,
                 years: '+3 years',
+                colors: ['#A259FF', '#1ABCFE'],
                 text: 'UI/UX interface prototyping, wireframing, building component systems, design-to-development handoffs, and landing page visual layouts.',
                 textEs: 'Prototipado de interfaces UI/UX, wireframing, creación de sistemas de componentes, flujos de diseño a desarrollo y layouts de landing pages.',
                 features: ['Auto-layout & Constraints', 'Component Libraries', 'Interactive Prototyping', 'Vector Network designs'],
                 featuresEs: ['Auto-layout y Restricciones', 'Librerías de Componentes', 'Prototipado Interactivo', 'Diseño de Redes Vectoriales'],
                 relatedFolder: { id: 'folder_design', name: 'Design & Photo' }
             },
-            'blender': { 
-                title: 'Blender', 
+            'blender': {
+                title: 'Blender',
                 level: 70,
                 years: '+2 years',
+                colors: ['#FF8800', '#E8590C'],
                 text: '3D modeling, basic texturing, material setup, lighting design, and camera animations to render 3D elements that enrich 2D composition projects.',
                 textEs: 'Modelado 3D, texturizado básico, configuración de materiales, diseño de iluminación y animaciones de cámara para enriquecer composiciones 2D.',
                 features: ['3D Modeling & Hard Surface', 'Cycles & Eevee Rendering', 'Procedural Shading', 'Keyframe Animation'],
@@ -2218,6 +2253,12 @@
                 relatedFolder: { id: 'folder_motion', name: 'Motion Graphics' }
             }
         };
+
+        function skillTier(level, lang) {
+            if (level >= 90) return lang === 'es' ? 'Experto' : 'Expert';
+            if (level >= 80) return lang === 'es' ? 'Avanzado' : 'Advanced';
+            return lang === 'es' ? 'Competente' : 'Proficient';
+        }
 
         /* --- STATE --- */
         let zIndex = 100;
@@ -2789,33 +2830,38 @@
             if (!data) return '';
 
             const softwareList = [
-                { id: 'premiere', name: 'Premiere Pro', icon: 'https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg' },
-                { id: 'aftereffects', name: 'After Effects', icon: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Adobe_After_Effects_CC_icon.svg' },
-                { id: 'davinci', name: 'DaVinci Resolve', icon: 'https://upload.wikimedia.org/wikipedia/commons/4/4a/DaVinci_Resolve_Studio.png' },
-                { id: 'photoshop', name: 'Photoshop', icon: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/Adobe_Photoshop_Express_logo.svg' },
-                { id: 'illustrator', name: 'Illustrator', icon: 'https://upload.wikimedia.org/wikipedia/commons/f/fb/Adobe_Illustrator_CC_icon.svg' },
-                { id: 'capcut', name: 'CapCut', icon: 'https://img.icons8.com/color/512/capcut.png' },
-                { id: 'figma', name: 'Figma', icon: 'https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg' },
-                { id: 'blender', name: 'Blender', icon: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/Blender_logo_no_text.svg' }
+                { id: 'premiere', name: 'Premiere Pro' },
+                { id: 'aftereffects', name: 'After Effects' },
+                { id: 'davinci', name: 'DaVinci Resolve' },
+                { id: 'photoshop', name: 'Photoshop' },
+                { id: 'illustrator', name: 'Illustrator' },
+                { id: 'capcut', name: 'CapCut' },
+                { id: 'figma', name: 'Figma' },
+                { id: 'blender', name: 'Blender' }
             ];
 
             const description = currentLang === 'es' ? (data.textEs || data.text) : data.text;
             const features = currentLang === 'es' ? (data.featuresEs || data.features) : data.features;
             const yearsLabel = currentLang === 'es' ? 'Experiencia' : 'Experience';
+            const tier = skillTier(data.level, currentLang);
+            const accent = data.colors[0];
+            const accentGradient = `linear-gradient(135deg, ${data.colors[0]}, ${data.colors[1]})`;
 
             let sidebarHtml = '';
             softwareList.forEach(sw => {
                 const isActive = sw.id === selectedId;
+                const swData = EXPERTISE_DB[sw.id];
                 sidebarHtml += `
-                    <div class="profiler-sidebar-item ${isActive ? 'active' : ''}" 
-                         style="padding: 8px 12px; display: flex; align-items: center; gap: 10px; cursor: var(--cursor-pointer); border-radius: 6px; margin: 2px 8px; transition: background 0.15s;" 
+                    <div class="profiler-sidebar-item ${isActive ? 'active' : ''}"
+                         style="padding: 8px 12px 8px 9px; display: flex; align-items: center; gap: 9px; cursor: var(--cursor-pointer); border-radius: 6px; margin: 2px 8px; border-left: 3px solid ${isActive ? swData.colors[0] : 'transparent'}; transition: background 0.15s, border-color 0.15s;"
                          onclick="switchProfilerApp('${sw.id}')"
                          onmouseover="if(!this.classList.contains('active')) this.style.background='rgba(255,255,255,0.06)'"
                          onmouseout="this.style.background=''">
                         <div style="width: 20px; height: 20px; border-radius: 4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden;">
                             ${getAppIconHtml(sw.id)}
                         </div>
-                        <span style="font-size: 12px; font-weight: 500; color: ${isActive ? '#fff' : 'rgba(255,255,255,0.65)'};">${sw.name}</span>
+                        <span style="font-size: 12px; font-weight: 500; color: ${isActive ? '#fff' : 'rgba(255,255,255,0.65)'}; flex-grow: 1;">${sw.name}</span>
+                        <span style="font-size: 9px; font-weight: 700; color: ${isActive ? swData.colors[0] : 'rgba(255,255,255,0.3)'};">${swData.level}%</span>
                     </div>
                 `;
             });
@@ -2824,20 +2870,45 @@
             features.forEach(f => {
                 featuresHtml += `
                     <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px; display: flex; align-items: center; gap: 8px;">
-                        <span style="color: var(--key-color); font-size: 14px;">✦</span>
+                        <span style="color: ${accent}; font-size: 14px;">✦</span>
                         <span style="font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.85);">${f}</span>
                     </div>
                 `;
             });
 
+            let featuredHtml = '';
+            if (data.featured && data.featured.length) {
+                const featuredLabel = currentLang === 'es' ? 'Trabajos realizados con esta herramienta' : 'Real work made with this tool';
+                let thumbs = '';
+                data.featured.forEach(item => {
+                    thumbs += `
+                        <div class="profiler-thumb"
+                             style="position: relative; flex: 1; aspect-ratio: 9/16; border-radius: 8px; overflow: hidden; cursor: var(--cursor-pointer); background: #000; border: 1px solid rgba(255,255,255,0.08);"
+                             onclick="openQuickTime('${item.name.replace(/'/g, "\\'")}', 'https://www.youtube.com/embed/${item.youtubeId}?autoplay=1')">
+                            <img src="https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg" loading="lazy" style="width:100%; height:100%; object-fit:cover; display:block; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">
+                            <div style="position:absolute; inset:0; background:linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.75) 100%); display:flex; align-items:flex-end; padding:6px; pointer-events:none;">
+                                <span style="font-size:9px; font-weight:600; color:#fff; line-height:1.2; text-shadow:0 1px 3px rgba(0,0,0,0.8);">${item.name}</span>
+                            </div>
+                            <div style="position:absolute; top:6px; right:6px; width:18px; height:18px; border-radius:50%; background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; font-size:8px; pointer-events:none;">▶</div>
+                        </div>
+                    `;
+                });
+                featuredHtml = `
+                    <div style="margin-top: 20px;">
+                        <div style="font-size: 10px; font-weight: bold; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">${featuredLabel}</div>
+                        <div style="display: flex; gap: 8px;">${thumbs}</div>
+                    </div>
+                `;
+            }
+
             let folderBtnHtml = '';
             if (data.relatedFolder) {
-                const btnText = currentLang === 'es' 
-                    ? `Ver Proyectos de ${data.title}` 
+                const btnText = currentLang === 'es'
+                    ? `Ver Proyectos de ${data.title}`
                     : `View ${data.title} Projects`;
-                
+
                 folderBtnHtml = `
-                    <button style="margin-top: 15px; background: var(--key-color); border: none; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: var(--cursor-pointer); display: inline-flex; align-items: center; gap: 6px; transition: opacity 0.2s;" 
+                    <button style="margin-top: 18px; background: ${accentGradient}; border: none; color: #fff; padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: var(--cursor-pointer); display: inline-flex; align-items: center; gap: 6px; transition: opacity 0.2s;"
                             onclick="openApp({id: '${data.relatedFolder.id}', name: '${data.relatedFolder.name}', type: '${data.relatedFolder.id.startsWith('folder') ? 'folder' : 'app'}'})"
                             onmouseover="this.style.opacity='0.9'"
                             onmouseout="this.style.opacity='1'">
@@ -2849,21 +2920,26 @@
             return `
                 <div class="profiler-layout" style="display: flex; height: 100%; background: #0c0c10; color: #fff; font-family: var(--font-ui);">
                     <!-- Sidebar -->
-                    <div class="profiler-sidebar" style="width: 180px; background: rgba(18, 18, 24, 0.45); border-right: 1px solid rgba(255, 255, 255, 0.08); padding-top: 15px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;">
+                    <div class="profiler-sidebar" style="width: 195px; background: rgba(18, 18, 24, 0.45); border-right: 1px solid rgba(255, 255, 255, 0.08); padding-top: 15px; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto;">
                         <div style="padding-left: 16px; font-size: 9px; font-weight: bold; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">${currentLang === 'es' ? 'Aplicaciones' : 'Applications'}</div>
                         ${sidebarHtml}
                     </div>
 
                     <!-- Content -->
-                    <div class="profiler-body" style="flex-grow: 1; padding: 25px; display: flex; flex-direction: column; overflow-y: auto;">
+                    <div class="profiler-body" key="${selectedId}" style="flex-grow: 1; padding: 25px; display: flex; flex-direction: column; overflow-y: auto; animation: profilerFadeIn 0.25s ease;">
                         <!-- Header block -->
                         <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-                            <div style="width: 50px; height: 50px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">${getAppIconHtml(selectedId)}</div>
+                            <div style="width: 54px; height: 54px; border-radius: 12px; box-shadow: 0 6px 18px ${accent}40, 0 2px 6px rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; background: rgba(255,255,255,0.04);">${getAppIconHtml(selectedId)}</div>
                             <div>
                                 <h2 style="margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">${data.title}</h2>
-                                <span style="font-size: 10px; color: #fff; background: linear-gradient(135deg, var(--key-color), #8a2be2); padding: 2px 8px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; display: inline-block; margin-top: 4px;">
-                                    ${data.years} ${yearsLabel}
-                                </span>
+                                <div style="display:flex; gap:6px; margin-top:5px;">
+                                    <span style="font-size: 10px; color: #fff; background: ${accentGradient}; padding: 2px 8px; border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em;">
+                                        ${data.years} ${yearsLabel}
+                                    </span>
+                                    <span style="font-size: 10px; color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.08); padding: 2px 8px; border-radius: 20px; font-weight: 600; letter-spacing: 0.03em;">
+                                        ${tier}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -2871,10 +2947,10 @@
                         <div style="margin-bottom: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7);">
                                 <span>${currentLang === 'es' ? 'Nivel de dominio' : 'Expertise Proficiency'}</span>
-                                <span style="color: var(--key-color);">${data.level}%</span>
+                                <span style="color: ${accent};">${data.level}%</span>
                             </div>
                             <div style="background: rgba(255,255,255,0.08); border-radius: 6px; height: 8px; overflow: hidden; width: 100%; margin-top: 8px;">
-                                <div style="background: linear-gradient(90deg, var(--key-color) 0%, #00f2fe 100%); width: 0%; height: 100%; border-radius: 6px; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);" class="skill-progress-bar" data-level="${data.level}"></div>
+                                <div style="background: ${accentGradient}; width: 0%; height: 100%; border-radius: 6px; transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 0 10px ${accent}80;" class="skill-progress-bar" data-level="${data.level}"></div>
                             </div>
                         </div>
 
@@ -2886,6 +2962,8 @@
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
                             ${featuresHtml}
                         </div>
+
+                        ${featuredHtml}
 
                         <!-- Related Folder Action Button -->
                         <div>
@@ -2900,7 +2978,7 @@
             const win = windows['profiler'];
             if (!win) return;
             win.querySelector('.window-body').innerHTML = renderProfilerApp(appId);
-            
+
             // Animate progress bar fill
             setTimeout(() => {
                 const bar = win.querySelector('.skill-progress-bar');
@@ -3368,10 +3446,10 @@
                 win.style.top = Math.max(25, Math.round((window.innerHeight - 500) / 2)) + 'px';
             }
             if (item.id === 'profiler') {
-                win.style.width = '700px'; win.style.minWidth = '650px';
-                win.style.height = '480px'; win.style.minHeight = '400px';
-                win.style.left = Math.max(0, Math.round((window.innerWidth - 700) / 2)) + 'px';
-                win.style.top = Math.max(25, Math.round((window.innerHeight - 480) / 2)) + 'px';
+                win.style.width = '760px'; win.style.minWidth = '650px';
+                win.style.height = '600px'; win.style.minHeight = '420px';
+                win.style.left = Math.max(0, Math.round((window.innerWidth - 760) / 2)) + 'px';
+                win.style.top = Math.max(25, Math.round((window.innerHeight - 600) / 2)) + 'px';
                 
                 // Animate progress bar fill on load
                 setTimeout(() => {
